@@ -5,9 +5,12 @@
     "vitest.config.*",
     "cypress.config.*",
     "nightwatch.conf.*",
-    "playwright.config.*"
+    "playwright.config.*","./auto-imports.d.ts"
   ],
   "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "lib": ["esnext", "dom"],
     "composite": true,
     "module": "ESNext",

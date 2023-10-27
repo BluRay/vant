@@ -1,5 +1,6 @@
 import axios from 'axios'
-import store from '@/store'
+// import store from '@/store'
+import mainStore from '../store'
 
 // create an axios instance
 const service = axios.create({
@@ -10,33 +11,31 @@ const service = axios.create({
 
 // request interceptor
 service.interceptors.request.use(
-  (  config: { headers: { [x: string]: string | null } }) => {
-    // do something before request is sent
-    // send logtail
-    config.headers['authorization'] = sessionStorage.getItem('TOKEN')
+  config => {
+    config.headers['authorization'] = mainStore().token
     return config
   },
-  (  error: any) => {
+  error => {
     console.log(error) // for debug
     return Promise.reject(error)
   }
 )
 
 service.interceptors.response.use(
-  (  response: { data: any; headers: { refreshtoken: string } }) => {
+  response => {
     const res = response.data
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 20000 && !res.success) {
       if (res.code === -10) {
         alert(res.msg)
-        store.dispatch('logout').then(() => {
+        mainStore().logout({username: mainStore().username}).then(() => {
           location.reload()
         })
       }
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === -1 || res.code === 50008 || res.code === 50012 || res.code === 50014) {
         alert('登录超时!')
-        store.dispatch('logout').then(() => {
+        mainStore().logout({username: mainStore().username}).then(() => {
           location.reload()
         })
       }
@@ -45,12 +44,13 @@ service.interceptors.response.use(
       const refreshtoken = response.headers.refreshtoken || ''
       if (refreshtoken !== '') {
         console.log('-->refreshtoken : ' + refreshtoken)
-        sessionStorage.setItem("TOKEN",refreshtoken);
+        // sessionStorage.setItem("TOKEN",refreshtoken);
+        mainStore().token = refreshtoken
       }
       return res
     }
   },
-  (  error: string) => {
+  error => {
     console.log('err' + error) // for debug
     return Promise.reject(error)
   }

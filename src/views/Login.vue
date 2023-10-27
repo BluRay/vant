@@ -6,25 +6,64 @@
     <van-swipe-item>3</van-swipe-item>
     <van-swipe-item>4</van-swipe-item>
   </van-swipe>
+  
+	<van-form>
+		<van-field
+			v-model="loginForm.username"
+			name="用户名"
+			label="用户名"
+			placeholder="用户名"
+			:rules="[{ required: true, message: '请填写用户名' }]"
+		/>
+		<van-field
+			v-model="loginForm.password"
+			type="password"
+			name="密码"
+			label="密码"
+			placeholder="密码"
+			:rules="[{ required: true, message: '请填写密码' }]"
+		/>
+	</van-form>
   <div style="margin: 16px;">
-    <van-button type="success" @click="handleLogin">主要按钮</van-button>
+    <van-button type="success" round block size="normal" @click="handleLogin">Login</van-button><br/>
+		<van-button type="primary" round block size="normal" @click="handleTest">测试</van-button>
   </div>
 </template>
 
 <script setup lang="ts" name="Login">
 import mainStore from '../store'
+import { userList } from '../api/user'
 import { showToast } from 'vant';
-
+import router from '../router'
+import { ref } from 'vue';
 const store = mainStore()
+const loginForm = ref({
+  username: "",
+  password: ""
+});
+
 const handleSignIn = () => {
   showToast('-->handleSignIn');
 }
 const handleLogin = () => {
-  showToast('-->handleLogin');
   store.login({
     username: 'admin', password: '123456', code: undefined, uuid: undefined
   }).then(() => {
-
+    showToast('Login Success');
+    console.log('store.username: ' + store.username)
+    router.push({ path: "/" });
+  })
+}
+const handleTest = () => {
+  userList({}).then((res) => {
+    console.log(res)
+    if(res.success) {
+      showToast('Test Success')
+    } else {
+      showToast('Test Failed' + res.error)
+    }
+  }).catch(error => {
+    showToast('Test Failed:' + error)
   })
 }
 </script>

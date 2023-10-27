@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import path from 'path'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 
 // https://vitejs.dev/config/
@@ -12,7 +13,9 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '~': path.resolve(__dirname, './'),
+      // 设置别名
+      '@': path.resolve(__dirname, './src')
     }
   },
   // vite 相关配置

@@ -1,24 +1,33 @@
 import { defineStore } from 'pinia'
-import { login } from '../api/user'
+import { login, logout } from '../api/user'
 export const mainStore = defineStore('main', {
   state: () => ({
     token: '',
-    name: '',
+    userid: '',
+    username: '',
     nickname:'',
     avatar: ''
   }),
   actions: {
     login(userInfo: { username: string; password: any; code: any; uuid: any }) {
-      console.log('-->mainStore login')
-      const username = userInfo.username.trim()
-      const password = userInfo.password
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         login(userInfo).then((res: { data: any }) => {
-        
+          this.token = res.data.result.token
+          this.username = res.data.result.username
+          this.nickname = res.data.result.realName
+          resolve()
         }).catch((error: any) => {
           reject(error)
         })
       })
+    },
+    logout(userInfo: { username: string}) {
+      return new Promise<void>(resolve => {
+				this.token = ''
+        this.username = ''
+        this.nickname = ''
+        resolve()
+			})
     }
   }
 })
