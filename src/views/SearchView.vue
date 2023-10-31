@@ -1,15 +1,17 @@
-<script setup lang="ts" name="HomeView">
-// import TheWelcome from '../../src/components/TheWelcome.vue'
-import MainPage from './tab0/MainPage.vue'
+<script setup lang="ts" name="AboutView">
 import SearchPage from './tab1/SearchPage.vue'
+import TheWelcome from '../components/TheWelcome.vue'
 import mainStore from '../store'
 import router from '../router'
 import { showToast } from 'vant'
-import { ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 const store = mainStore()
 const popupShow = ref(false)
-const active = ref(0);
-const bodyComponent = ref(MainPage)
+const active = ref(1)
+const bodyComponent = shallowRef(SearchPage)
+function onClickLeft() {
+  bodyComponent.value = SearchPage
+}
 function onClickRight() {
   popupShow.value = true
 }
@@ -36,12 +38,16 @@ function onTabChange(index) {
 function handleLogout() {
   mainStore().logout({username: mainStore().username}).then(() => {
     showToast('handleLogout');
-    location.reload()
+    router.push({ path: "/" })
   })
+}
+function showDetail(id) {
+  console.log('-->showDetail id:' + id)
+  bodyComponent.value = TheWelcome
 }
 </script>
 <template>
-	<van-nav-bar title="首页" left-text="返回" left-arrow @click-right="onClickRight">
+	<van-nav-bar title="首页" left-text="返回" left-arrow @click-left="onClickLeft" @click-right="onClickRight">
     <template #right>
       <van-icon name="setting-o" size="22" />
     </template>
@@ -59,8 +65,16 @@ function handleLogout() {
       <van-sidebar-item @click="handleLogout" title="退出" />
     </van-sidebar>
   </van-popup>
-  <main>
-    <!--TheWelcome /-->
-    <component :is="bodyComponent"></component>
-  </main>
+  <van-search v-model="keyword" placeholder="请输入搜索关键词" />
+  <component @showDetail="showDetail" :is="bodyComponent"></component>
 </template>
+
+<style>
+@media (min-width: 1024px) {
+  .about {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+}
+</style>
