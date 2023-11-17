@@ -9,11 +9,12 @@ import { ref } from 'vue'
 const store = mainStore()
 const popupShow = ref(false)
 const active = ref(0);
+const msgCount = ref(1);
 const bodyComponent = ref(MainPage)
 function onClickRight() {
   popupShow.value = true
 }
-function onTabChange(index) {
+function onTabChange(index:number) {
   active.value = index
   showToast({
     message: '加载中...',
@@ -38,6 +39,9 @@ function handleLogout() {
     showToast('handleLogout');
     location.reload()
   })
+}
+function showSysMsg() {
+
 }
 </script>
 <template>

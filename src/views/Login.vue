@@ -26,7 +26,7 @@
 	</van-form>
   <div style="margin: 16px;">
     <van-button type="success" round block size="normal" @click="handleLogin">Login</van-button><br/>
-		<van-button type="primary" round block size="normal" @click="handleTest">测试</van-button>
+		<van-button v-if="showReg" type="primary" round block size="normal" @click="handleTest">测试</van-button>
   </div>
 </template>
 
@@ -37,12 +37,19 @@ import { showToast } from 'vant';
 import router from '../router'
 import { ref } from 'vue';
 const store = mainStore()
-const loginForm = ref({
+const showReg = ref<boolean>(false)
+
+interface loginUser {
+  username: string
+  password: string
+}
+
+const loginForm = ref<loginUser>({
   username: "",
   password: ""
 });
 
-const handleSignIn = () => {
+const handleSignIn = (e:any) => {
   showToast('-->handleSignIn');
 }
 const handleLogin = () => {
@@ -55,7 +62,7 @@ const handleLogin = () => {
   })
 }
 const handleTest = () => {
-  userList({}).then((res) => {
+  userList({}).then((res:any) => {
     console.log(res)
     if(res.success) {
       showToast('Test Success')
